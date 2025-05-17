@@ -11,3 +11,8 @@ sky:
     access-key-id: LTAI5tA8HvvZhvehWCvBJ5sZ
     access-key-secret: iUiLRxgCEWiVDJlDXYlnKgydnVTuce
     bucket-name: web-xinzhao
+  redis:
+    host: localhost
+    port: 6379
+    password: 020428
+    database: 10

@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -144,6 +145,7 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 根据id修改菜品的基本信息和对应的口味信息
+     *
      * @param dishDTO
      */
     public void updateWithFlavor(DishDTO dishDTO) {
@@ -151,17 +153,16 @@ public class DishServiceImpl implements DishService {
         Dish dish = new Dish();
         BeanUtils.copyProperties(dishDTO, dish);
 
-        //修改菜品的基本信息（DTO里有多余的口味信息，不需要）
+        // 修改菜品的基本信息（DTO里有多余的口味信息，不需要）
         dishMapper.update(dish);
 
 
-
-        //删除原有的口味数据（因为修改口味信息很麻烦，不如先删除再重新插入）
+        // 删除原有的口味数据（因为修改口味信息很麻烦，不如先删除再重新插入）
         dishFlavorMapper.deleteByDishId(dishDTO.getId());
 
-        //重新插入口味数据
+        // 重新插入口味数据
         List<DishFlavor> flavors = dishDTO.getFlavors();
-        //逻辑和新增一样，直接用上面的代码
+        // 逻辑和新增一样，直接用上面的代码
         if (flavors != null && flavors.size() > 0) {
             flavors.forEach(dishFlavor -> {
                 dishFlavor.setDishId(dishDTO.getId());
@@ -170,5 +171,29 @@ public class DishServiceImpl implements DishService {
             dishFlavorMapper.insertBatch(flavors);
 
         }
+    }
+
+    /**
+     * 条件查询菜品和口味
+     * @param dish
+     * @return
+     */
+    public List<DishVO> listWithFlavor(Dish dish) {
+        List<Dish> dishList = dishMapper.list(dish);
+
+        List<DishVO> dishVOList = new ArrayList<>();
+
+        for (Dish d : dishList) {
+            DishVO dishVO = new DishVO();
+            BeanUtils.copyProperties(d,dishVO);
+
+            //根据菜品id查询对应的口味
+            List<DishFlavor> flavors = dishFlavorMapper.getByDishId(d.getId());
+
+            dishVO.setFlavors(flavors);
+            dishVOList.add(dishVO);
+        }
+
+        return dishVOList;
     }
 }

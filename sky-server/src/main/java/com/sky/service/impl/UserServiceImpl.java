@@ -63,6 +63,11 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    /**
+     * 调用微信接口服务，获取微信用户的openid
+     * @param code
+     * @return
+     */
     private String getOpenid(String code) {
         //调用微信接口服务，获得当前微信用户openid
         Map<String, String> map = new HashMap<>();

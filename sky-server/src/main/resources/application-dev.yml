@@ -19,3 +19,18 @@ sky:
   wechat:
     appid: wx11af1942b1f9e457
     secret: b4d69deab49e016cb3f5615150c3fe8b
+    #TODO 微信支付无法使用
+    #商户号
+    mchid:
+    #证书序列号
+    mchSerialNO:
+    #私钥文件
+    privateKeyFilePath:
+    #解密秘钥
+    apiV3Key:
+    #平台证书
+    weChatPayCertFilePath:
+    #回调地址，支付成功，微信发起，商户系统接受
+    notifyUrl:
+    #支付失败，微信发起
+    refundNotifyUrl:

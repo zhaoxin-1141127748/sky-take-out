@@ -147,7 +147,7 @@ public class OrderServiceImpl implements OrderService {
         Long userId = BaseContext.getCurrentId();
         User user = userMapper.getById(userId);
 
-        //TODO 微信支付无法使用
+        // TODO 微信支付无法使用
         /*//调用微信支付接口，生成预支付交易单
         JSONObject jsonObject = weChatPayUtil.pay(
                 ordersPaymentDTO.getOrderNumber(), //商户订单号
@@ -175,11 +175,11 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.updateStatus(OrderStatus, OrderPaidStatus, check_out_time, this.orders.getId());
 
 
-        //通过websocket向客户端浏览器推送消息 type orderId content
+        // 通过websocket向客户端浏览器推送消息 type orderId content
         Map map = new HashMap();
-        map.put("type",1);
-        map.put("orderId",this.orders.getId());
-        map.put("content","订单号："+this.orders.getNumber());
+        map.put("type", 1);
+        map.put("orderId", this.orders.getId());
+        map.put("content", "订单号：" + this.orders.getNumber());
         String json = JSON.toJSONString(map);
         webSocketServer.sendToAllClient(json);
 
@@ -206,11 +206,11 @@ public class OrderServiceImpl implements OrderService {
 
         orderMapper.update(orders);
 
-        //通过WebSocket向客户端浏览器推送消息type orderId content
-        Map map =new HashMap();
-        map.put("type",1);
-        map.put("orderId",ordersDB.getId());
-        map.put("content","订单号" + outTradeNo);
+        // 通过WebSocket向客户端浏览器推送消息type orderId content
+        Map map = new HashMap();
+        map.put("type", 1);
+        map.put("orderId", ordersDB.getId());
+        map.put("content", "订单号" + outTradeNo);
 
         String json = JSON.toJSONString(map);
         webSocketServer.sendToAllClient(json);
@@ -301,7 +301,7 @@ public class OrderServiceImpl implements OrderService {
         orders.setId(ordersDB.getId());
 
         // 订单处于待接单状态下取消，需要进行退款
-        //TODO微信支付无法使用
+        // TODO微信支付无法使用
 
        /* if (ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
             // 调用微信支付退款接口
@@ -455,10 +455,10 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
 
-        //TODO 微信支付无法使用
+        // TODO 微信支付无法使用
 
         // 支付状态
-        //微信支付未开通，用不了
+        // 微信支付未开通，用不了
         /*Integer payStatus = ordersDB.getPayStatus();
         if (payStatus == Orders.PAID) {
             // 用户已支付，需要退款
@@ -490,8 +490,8 @@ public class OrderServiceImpl implements OrderService {
         // 根据id查询订单
         Orders ordersDB = orderMapper.getById(ordersCancelDTO.getId());
 
-        //支付状态
-        //TODO 微信支付未开通
+        // 支付状态
+        // TODO 微信支付未开通
         /*Integer payStatus = ordersDB.getPayStatus();
         if (payStatus == 1) {
             //用户已支付，需要退款
@@ -556,4 +556,31 @@ public class OrderServiceImpl implements OrderService {
 
         orderMapper.update(orders);
     }
+
+    /**
+     * 客户催单
+     *
+     * @param id
+     */
+    public void reminder(Long id) {
+        // 根据id查询订单
+        Orders ordersDB = orderMapper.getById(id);
+
+        // 校验订单是否存在，并且状态为4
+        if (ordersDB == null){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Map map = new HashMap();
+        map.put("type",2);
+        map.put("orderId", id);
+        map.put("content","订单号："+ ordersDB.getNumber());
+
+
+
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
+
+
+    }
+
 }
